@@ -1,0 +1,1940 @@
+Screens:
+  DetailScreen1:
+    Properties:
+      Fill: =
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: |-
+        =Set(varFieldWidth, App.Width - 320);
+        Set(varLabelWidth, App.Width - varFieldWidth - 80);
+        Set(varFieldHeight, 40);
+        Set(varRightOffset, 40);
+        Set(varTopOffset, 0);
+        Set(fontSizeLabel, 16);
+    Children:
+      - RectQuickActionBar2:
+          Control: Rectangle@2.3.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Fill: =RGBA(56, 96, 178, 1)
+            Height: =88
+            Width: =Parent.Width
+            Y: =Container7.Height-1
+      - IconBackarrow1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: =Self.Tooltip
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Height: =88
+            Icon: =Icon.ChevronLeft
+            OnSelect: =Navigate(BrowseScreen1, ScreenTransition.Fade)
+            PaddingBottom: =24
+            PaddingLeft: =24
+            PaddingRight: =24
+            PaddingTop: =24
+            PressedFill: =RGBA(255, 255, 255, 0.3)
+            TabIndex: =0
+            Tooltip: ="Back to list"
+            Width: =88
+            Y: =Container7.Height
+      - IconEdit1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: =Self.Tooltip
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Height: =88
+            Icon: =Icon.Edit
+            OnSelect: =EditForm(EditForm1);Navigate(EditScreen1, ScreenTransition.None)
+            PaddingBottom: =24
+            PaddingLeft: =24
+            PaddingRight: =24
+            PaddingTop: =24
+            PressedFill: =RGBA(255, 255, 255, 0.3)
+            TabIndex: =0
+            Tooltip: ="Edit this item"
+            Visible: =((BrowseGallery1.Selected.'Created By'.Email = User().Email))
+            Width: =88
+            X: =Parent.Width - Self.Width
+            Y: =RectQuickActionBar2.Y
+      - IconDelete1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            AccessibleLabel: =Self.Tooltip
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            DisplayMode: =If((BrowseGallery1.Selected.'Created By'.Email = User().Email), DisplayMode.Edit, DisplayMode.Disabled)
+            Height: =88
+            Icon: =Icon.Trash
+            OnSelect: |-
+              =UpdateContext({ showDeleteConfirm: true })
+            PaddingBottom: =24
+            PaddingLeft: =24
+            PaddingRight: =24
+            PaddingTop: =24
+            PressedFill: =RGBA(255, 255, 255, 0.3)
+            TabIndex: =0
+            Tooltip: ="Delete this item"
+            Visible: =false
+            Width: =88
+            X: =Parent.Width - IconEdit1.Width - Self.Width
+            Y: =RectQuickActionBar2.Y
+      - LblAppName2:
+          Control: Label@2.5.1
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            Color: =RGBA(255, 255, 255, 1)
+            Font: =Font.'Open Sans'
+            Height: =88
+            Size: =27
+            Text: ="SEABAS List"
+            Width: =Parent.Width - Self.X - IconDelete1.Width - IconEdit1.Width
+            Wrap: =false
+            X: =IconBackarrow1.X + IconBackarrow1.Width
+            Y: =Container7.Height
+      - DetailForm1:
+          Control: FormViewer@2.3.4
+          Layout: Vertical
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            DataSource: ='SEABAS List'
+            Height: =Parent.Height - DetailForm1.Y
+            Item: =BrowseGallery1.Selected
+            Width: =Parent.Width
+            Y: =RectQuickActionBar2.Y + RectQuickActionBar2.Height + 20
+          Children:
+            - Sales Manager Name_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Sales_x0020_Manager_x0020_Name"
+                  Default: =ThisItem.'Sales Manager Name'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Sales Manager Name')
+                  Height: =HtmlText1.Height * 1.2
+                  Required: =true
+                  Update: =DataCardValue2.Selected
+                  X: =0
+                  Y: =0
+                Children:
+                  - DataCardKey2:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        Align: =Align.Center
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =48
+                        Text: =Parent.DisplayName
+                        Visible: =false
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                  - DataCardValue2:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Bold
+                        Height: =35
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Italic: =true
+                        Items: =Choices([@'SEABAS List'].'Sales Manager Name')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Visible: =false
+                        Width: =Parent.Width - 60
+                        X: =30
+                  - ErrorMessage1:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue2.Y + DataCardValue2.Height
+                  - StarVisible1:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey2.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey2.Y
+                  - HtmlText1:
+                      Control: HtmlViewer@2.1.0
+                      Properties:
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =50
+                        HtmlText: |-
+                          ="<div style='text-align:center;'><span style='font-family:Segoe UI;'>
+                          Sales Manager:<i><b> " & DataCardValue2.Selected.Value &
+                          "</b></i></span></div>"
+                        Size: =fontSizeLabel + 4
+                        X: =(Parent.Width - Self.Width) / 2
+                        Y: =10
+            - ID_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="ID"
+                  Default: =ThisItem.ID
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,ID)
+                  Height: =HtmlText1_1.Height * 1.2
+                  Required: =false
+                  X: =0
+                  Y: =1
+                Children:
+                  - DataCardKey50:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =48
+                        Text: =Parent.DisplayName
+                        Visible: =false
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                  - DataCardValue50:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =40
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Text: =Parent.Default
+                        Visible: =false
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey50.Y + DataCardKey50.Height + 5
+                  - HtmlText1_1:
+                      Control: HtmlViewer@2.1.0
+                      Properties:
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =50
+                        HtmlText: |-
+                          ="<div style='text-align:center;'><span style='font-family:Segoe UI;'>
+                          Trade <b>#</b><i><b>" & DataCardValue50.Text&
+                          "</b></i>"&If(!IsBlank(ThisItem.'SAP SE Number')," | SAP SE #<b>"&ThisItem.'SAP SE Number',"")&"</b></span></div>"
+                        Size: =fontSizeLabel + 4
+                        X: =(Parent.Width - Self.Width) / 2
+            - Trade Date_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Trade_x0020_Date"
+                  Default: =Text(ThisItem.'Trade Date', "dd mmm yy")
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Trade Date')
+                  Height: =varFieldHeight
+                  Required: =true
+                  X: =0
+                  Y: =2
+                Children:
+                  - DataCardKey3:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                  - DataCardValue3:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+            - Material Code_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="SKU"
+                  Default: =ThisItem.'Material Code'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Material Code')
+                  Height: =varFieldHeight
+                  Required: =false
+                  X: =0
+                  Y: =3
+                Children:
+                  - DataCardKey31:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue31:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Material_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Material"
+                  Default: =ThisItem.Material
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Material)
+                  Height: =Max(varFieldHeight, DataCardValue1.Height)
+                  Required: =false
+                  X: =0
+                  Y: =4
+                Children:
+                  - DataCardKey1:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =(Parent.Height - Self.Height) / 2
+                  - DataCardValue1:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =(Parent.Height - Self.Height) / 2
+            - Product Name_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Product_x0020_Name0"
+                  Default: =ThisItem.'Product Name'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Product Name')
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue4.Selected
+                  X: =0
+                  Y: =5
+                Children:
+                  - DataCardKey4:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: |+
+                          =0
+                  - DataCardValue4:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        BorderThickness: |+
+                          =0
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Product Name')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =0
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: |+
+                          =0
+                  - ErrorMessage2:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue4.Y + DataCardValue4.Height
+                  - StarVisible2:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey4.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey4.Y
+            - Product Form_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Product_x0020_Form"
+                  Default: =ThisItem.'Product Form'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Product Form')
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue5.Selected
+                  X: =0
+                  Y: =6
+                Children:
+                  - DataCardKey5:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue5:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Product Form')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage3:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue5.Y + DataCardValue5.Height
+                  - StarVisible3:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey5.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey5.Y
+            - Packaging Size_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Packaging_x0020_Size"
+                  Default: =ThisItem.'Packaging Size'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Packaging Size')
+                  Required: =true
+                  Update: =DataCardValue16.Selected
+                  X: =0
+                  Y: =7
+                Children:
+                  - DataCardKey16:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =48
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =(Parent.Height - Self.Height) / 2
+                  - DataCardValue16:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Packaging Size')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =(Parent.Height - Self.Height) / 2
+                  - ErrorMessage11:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue16.Y + DataCardValue16.Height
+                  - StarVisible7:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey16.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey16.Y
+            - Packing Description_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Packing_x0020_Description"
+                  Default: =ThisItem.'Packing Description'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Packing Description')
+                  Required: =true
+                  Update: =DataCardValue33.Selected
+                  X: =0
+                  Y: =8
+                Children:
+                  - DataCardKey33:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =48
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =(Parent.Height - Self.Height) / 2
+                  - DataCardValue33:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Packing Description')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =(Parent.Height - Self.Height) / 2
+                  - ErrorMessage25:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue33.Y + DataCardValue33.Height
+                  - StarVisible9:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey33.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey33.Y
+            - Price_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Price"
+                  Default: =ThisItem.Price
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Price)
+                  Height: =varFieldHeight
+                  Required: =true
+                  X: =0
+                  Y: =9
+                Children:
+                  - DataCardKey6:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: ="Price (USD/MT)"
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue6:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: |+
+                          =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Volume (MT)_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Volume_x0020__x0028_MT_x0029_"
+                  Default: =ThisItem.'Volume (MT)'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Volume (MT)')
+                  Height: =varFieldHeight
+                  Required: =true
+                  X: =0
+                  Y: =10
+                Children:
+                  - DataCardKey7:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue7:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Marketing Margin_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Marketing_x0020_Margin"
+                  Default: =ThisItem.'Marketing Margin'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Marketing Margin')
+                  Required: =false
+                  X: =0
+                  Y: =11
+                Children:
+                  - DataCardKey52:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: ="MM (USD/MT)"
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue52:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Ship-to Party_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Ship_x002d_to_x0020_Party"
+                  Default: =ThisItem.'Ship-to Party'.Value
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Ship-to Party')
+                  Height: =varFieldHeight
+                  Required: =true
+                  X: =0
+                  Y: =12
+                Children:
+                  - DataCardKey38:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue38:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =If(Len(Self.Text) > 20, fontSizeLabel - 4, fontSizeLabel)
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Customer_DataCard1:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Customer"
+                  Default: =ThisItem.Customer.Value
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Customer)
+                  Height: =varFieldHeight
+                  Required: =true
+                  X: =0
+                  Y: =13
+                Children:
+                  - DataCardKey8:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue8:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        Size: =If(Len(Self.Text) > 20, fontSizeLabel - 4, fontSizeLabel)
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Delivery Date / ETD_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Delivery_x0020_Date_x0020__x002f"
+                  Default: =Text(ThisItem.'Delivery Date / ETD', "dd mmm yy")
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Delivery Date / ETD')
+                  Height: =varFieldHeight
+                  Required: =true
+                  X: =0
+                  Y: =14
+                Children:
+                  - DataCardKey35:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue35:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: '=Parent.Width - Self.Width - varRightOffset  '
+                        Y: =varTopOffset
+            - Packaging_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Packaging"
+                  Default: =ThisItem.Packaging
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Packaging)
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue24.Selected
+                  X: =0
+                  Y: =15
+                Children:
+                  - DataCardKey24:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue24:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].Packaging)
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage19:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue24.Y + DataCardValue24.Height
+                  - StarVisible19:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey24.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey24.Y
+            - Stuffing_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Stuffing"
+                  Default: =ThisItem.Stuffing
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Stuffing)
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue27.Selected
+                  X: =0
+                  Y: =16
+                Children:
+                  - DataCardKey27:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue27:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].Stuffing)
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage20:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue27.Y + DataCardValue27.Height
+                  - StarVisible20:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey27.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey27.Y
+            - Incoterm_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Incoterm"
+                  Default: =ThisItem.Incoterm
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Incoterm)
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue28.Selected
+                  X: =0
+                  Y: =17
+                Children:
+                  - DataCardKey28:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue28:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].Incoterm)
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage21:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue28.Y + DataCardValue28.Height
+                  - StarVisible21:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey28.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey28.Y
+            - Country (SH)_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Country_x0020__x0028_SH_x0029_"
+                  Default: =ThisItem.'Country (SH)'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Country (SH)')
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue26.Selected
+                  X: =0
+                  Y: =18
+                Children:
+                  - DataCardKey26:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue26:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Country (SH)')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage38:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue26.Y + DataCardValue26.Height
+            - Ship-to Destination_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Ship_x002d_to_x0020_Destination"
+                  Default: =ThisItem.'Ship-to Destination'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Ship-to Destination')
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue49.Selected
+                  X: =0
+                  Y: =19
+                Children:
+                  - DataCardKey49:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue49:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Ship-to Destination')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage39:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue49.Y + DataCardValue49.Height
+            - Freight Rate_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Freight_x0020_Rate"
+                  Default: =ThisItem.'Freight Rate'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Freight Rate')
+                  Height: =varFieldHeight
+                  Required: =false
+                  X: =0
+                  Y: =20
+                Children:
+                  - DataCardKey51:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Concatenate(Parent.DisplayName, " (USD/MT)")
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue51:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Payment Term_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Payment_x0020_Term"
+                  Default: =ThisItem.'Payment Term'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Payment Term')
+                  Height: =varFieldHeight
+                  Required: =false
+                  Update: =DataCardValue39.Selected
+                  X: =0
+                  Y: =21
+                Children:
+                  - DataCardKey39:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue39:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Payment Term')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                  - ErrorMessage23:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue39.Y + DataCardValue39.Height
+            - MB_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="MB"
+                  Default: =ThisItem.MB
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,MB)
+                  Height: =varFieldHeight
+                  Required: =true
+                  Update: =DataCardValue40.Selected
+                  X: =0
+                  Y: =22
+                Children:
+                  - DataCardKey40:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue40:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Value"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].MB)
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Value"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Size: =fontSizeLabel
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+                  - ErrorMessage27:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue40.Y + DataCardValue40.Height
+            - RPS_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="RPS"
+                  Default: =ThisItem.RPS
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,RPS)
+                  Height: =varFieldHeight
+                  Required: =false
+                  X: =0
+                  Y: =23
+                Children:
+                  - DataCardKey25:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue25:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        Text: =Parent.Default
+                        Width: =varFieldWidth
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =varTopOffset
+            - Created By_DataCard3:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicComboBoxView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Author"
+                  Default: =ThisItem.'Created By'
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,'Created By')
+                  Height: =varFieldHeight
+                  Required: =false
+                  Update: =DataCardValue23.Selected
+                  Visible: =false
+                  X: =0
+                  Y: =24
+                Children:
+                  - DataCardKey23:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                  - DataCardValue23:
+                      Control: Classic/ComboBox@2.4.0
+                      MetadataKey: FieldValue
+                      Properties:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        ChevronBackground: =RGBA(56, 96, 178, 1)
+                        ChevronFill: =RGBA(255, 255, 255, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                        ChevronHoverFill: =RGBA(255, 255, 255, 1)
+                        DefaultSelectedItems: =Parent.Default
+                        DisplayFields: =["Claims"]
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        HoverFill: =RGBA(186, 202, 226, 1)
+                        Items: =Choices([@'SEABAS List'].'Created By')
+                        PaddingBottom: =5
+                        PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PaddingRight: =5
+                        PaddingTop: =5
+                        PressedColor: =RGBA(255, 255, 255, 1)
+                        PressedFill: =RGBA(0, 18, 107, 1)
+                        SearchFields: =["Claims"]
+                        SelectMultiple: =false
+                        SelectionColor: =RGBA(255, 255, 255, 1)
+                        SelectionFill: =RGBA(56, 96, 178, 1)
+                        Width: =Parent.Width - 60
+                        X: =Parent.Width - Self.Width - varRightOffset
+                        Y: =DataCardKey23.Y + DataCardKey23.Height + 5
+                  - ErrorMessage18:
+                      Control: Label@2.5.1
+                      MetadataKey: ErrorMessage
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(168, 0, 0, 1)
+                        Font: =Font.'Open Sans'
+                        FontWeight: =FontWeight.Semibold
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =24
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue23.Y + DataCardValue23.Height
+                  - StarVisible18:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldRequired
+                      Properties:
+                        Align: =Align.Center
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =DataCardKey23.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey23.Y
+            - Remarks_DataCard2:
+                Control: TypedDataCard@1.0.7
+                Variant: ClassicTextualView
+                IsLocked: true
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  DataField: ="Remarks"
+                  Default: =ThisItem.Remarks
+                  DisplayName: =DataSourceInfo([@'SEABAS List'],DataSourceInfo.DisplayName,Remarks)
+                  Height: =varFieldHeight
+                  Required: =false
+                  X: =0
+                  Y: =25
+                Children:
+                  - DataCardKey29:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldName
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 0, 0, 1)
+                        Color: =RGBA(0, 18, 107, 1)
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        Size: =fontSizeLabel
+                        Text: =Parent.DisplayName
+                        Width: =varLabelWidth
+                        Wrap: =false
+                        X: =30
+                        Y: =varTopOffset
+                  - DataCardValue29:
+                      Control: Label@2.5.1
+                      MetadataKey: FieldValue
+                      Properties:
+                        AutoHeight: =true
+                        BorderColor: =RGBA(0, 18, 107, 1)
+                        DisplayMode: =Parent.DisplayMode
+                        Font: =Font.'Open Sans'
+                        Height: =varFieldHeight
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Size: =fontSizeLabel
+                        Text: =Parent.Default
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey29.Y + DataCardKey29.Height + 5
+      - Container1:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            Visible: =showDeleteConfirm
+            X: =70
+            Y: =499
+          Children:
+            - Rectangle3:
+                Control: Rectangle@2.3.0
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Fill: =RGBA(56, 96, 178, 1)
+                  Height: =225
+                  Width: =500
+            - Label1:
+                Control: Label@2.5.1
+                Properties:
+                  Align: =Align.Center
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(255, 255, 255, 1)
+                  Font: =Font.'Open Sans'
+                  Size: =27
+                  Text: ="Delete this entry?"
+                  Width: =500
+                  Y: =26
+            - Delete_Button:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(9, 33, 98, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(175, 191, 224, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =Remove([@'SEABAS List'], BrowseGallery1.Selected);
+
+                    If(
+                        IsEmpty(Errors([@'SEABAS List'], BrowseGallery1.Selected)),
+                        Back()
+                    );
+
+                    UpdateContext({ showDeleteConfirm: false });
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="Delete"
+                  Width: =209
+                  X: =33
+                  Y: =123
+            - Cancel_Button:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =ColorFade(Self.Fill, -15%)
+                  Color: =RGBA(9, 33, 98, 1)
+                  DisabledBorderColor: =RGBA(166, 166, 166, 1)
+                  Fill: =RGBA(175, 191, 224, 1)
+                  Font: =Font.'Open Sans'
+                  HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+                  HoverColor: =RGBA(255, 255, 255, 1)
+                  HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+                  OnSelect: |-
+                    =UpdateContext({ showDeleteConfirm: false })
+                  PressedBorderColor: =Self.Fill
+                  PressedColor: =Self.Fill
+                  PressedFill: =Self.Color
+                  Text: ="Cancel"
+                  Width: =211
+                  X: =257
+                  Y: =123
+      - Container7:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            BorderStyle: =BorderStyle.None
+            DropShadow: =DropShadow.None
+            Fill: =RGBA(56, 96, 178, 1)
+            Height: =50
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Width: =640
