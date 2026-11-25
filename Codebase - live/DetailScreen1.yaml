@@ -53,7 +53,7 @@ Screens:
             PressedFill: =RGBA(255, 255, 255, 0.3)
             TabIndex: =0
             Tooltip: ="Edit this item"
-            Visible: =((BrowseGallery1.Selected.'Created By'.Email = User().Email))
+            Visible: =varSEABASSelectedTrade.'Created By'.Email = User().Email
             Width: =88
             X: =Parent.Width - Self.Width
             Y: =RectQuickActionBar2.Y
@@ -63,7 +63,7 @@ Screens:
             AccessibleLabel: =Self.Tooltip
             BorderColor: =RGBA(0, 18, 107, 1)
             Color: =RGBA(255, 255, 255, 1)
-            DisplayMode: =If((BrowseGallery1.Selected.'Created By'.Email = User().Email), DisplayMode.Edit, DisplayMode.Disabled)
+            DisplayMode: =If(varSEABASSelectedTrade.'Created By'.Email = User().Email, DisplayMode.Edit, DisplayMode.Disabled)
             Height: =88
             Icon: =Icon.Trash
             OnSelect: |-
@@ -99,7 +99,7 @@ Screens:
             BorderColor: =RGBA(0, 18, 107, 1)
             DataSource: ='SEABAS List'
             Height: =Parent.Height - DetailForm1.Y
-            Item: =BrowseGallery1.Selected
+            Item: =varSEABASSelectedTrade
             Width: =Parent.Width
             Y: =RectQuickActionBar2.Y + RectQuickActionBar2.Height + 20
           Children:
@@ -1890,10 +1890,10 @@ Screens:
                   HoverColor: =RGBA(255, 255, 255, 1)
                   HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
                   OnSelect: |-
-                    =Remove([@'SEABAS List'], BrowseGallery1.Selected);
+                    =Remove([@'SEABAS List'], varSEABASSelectedTrade);
 
                     If(
-                        IsEmpty(Errors([@'SEABAS List'], BrowseGallery1.Selected)),
+                        IsEmpty(Errors([@'SEABAS List'], varSEABASSelectedTrade)),
                         Back()
                     );
 

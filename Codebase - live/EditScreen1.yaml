@@ -24,7 +24,7 @@ Screens:
             If(
                 EditForm1.Mode = FormMode.New,
                 Blank(),
-                BrowseGallery1.Selected.'Marketing Margin'
+                varSEABASSelectedTrade.'Marketing Margin'
             )
         );
         Set(varMarginManual, !IsBlank(varMarginOverride));
@@ -129,10 +129,14 @@ Screens:
               =If(
                   EditForm1.Mode = FormMode.New,
                   Defaults('SEABAS List'),
-                  BrowseGallery1.Selected
+                  varSEABASSelectedTrade
               )
             OnSuccess: |-
-              =Back();
+              =If(
+                  Self.LastSubmit.ID = varSEABASSelectedTrade.ID,
+                  Set(varSEABASSelectedTrade, Self.LastSubmit)
+              );
+              Back();
               Set(varCopyMode, false);
               Set(varPrev, Blank());
               ResetForm(EditForm1);
@@ -255,7 +259,8 @@ Screens:
                           =88
                         Icon: =Icon.Copy
                         OnSelect: |-
-                          =Set(varShowPickPrev, true);
+                          =Reset(TextSearchBox2);
+                          Set(varShowPickPrev, true);
                           Set(varCopyMode, false);
                           Set(varPrev, Blank());
                         PaddingBottom: =22
@@ -3817,13 +3822,30 @@ Screens:
                   BorderColor: =RGBA(0, 18, 107, 1)
                   Height: =852
                   Items: |-
-                    =SortByColumns(
-                        [@'SEABAS List'],
-                        "Created",
-                        If(
-                            !SortDescendingCopyScreen,
-                            SortOrder.Descending,
-                            SortOrder.Ascending
+                    =If(
+                        IsBlank(Trim(TextSearchBox2.Text)),
+                        SortByColumns(
+                            [@'SEABAS List'],
+                            "Created",
+                            If(SortDescendingCopyScreen, SortOrder.Ascending, SortOrder.Descending)
+                        ),
+                        SortByColumns(
+                            Filter(
+                                [@'SEABAS List'],
+                                Trim(TextSearchBox2.Text) in (
+                                    Text('Trade Date', "dd/mm/yyyy") & " " &
+                                    'Sales Manager Name'.Value & " " &
+                                    Stuffing.Value & " " &
+                                    'Product Name'.Value & ", " &
+                                    'Product Form'.Value & ", $" &
+                                    Text(Price) & "/MT " &
+                                    Incoterm.Value & " " &
+                                    'Ship-to Destination'.Value & ", " &
+                                    Customer.Value
+                                )
+                            ),
+                            "Created",
+                            If(SortDescendingCopyScreen, SortOrder.Ascending, SortOrder.Descending)
                         )
                     )
                   OnSelect: |-
@@ -4003,12 +4025,12 @@ Screens:
                   BorderColor: =RGBA(0, 18, 107, 1)
                   Default: =
                   Font: =Font.'Open Sans'
+                  Height: =Gallery3_1.Y - Self.Y
                   HintText: ="Search"
                   HoverBorderColor: =RGBA(0, 18, 107, 1)
                   HoverFill: =RGBA(186, 202, 226, 1)
                   PaddingLeft: |
                     =70
-                  Visible: =false
                   Width: =640
                   Y: =88
             - SearchIcon1_1:
@@ -4023,7 +4045,6 @@ Screens:
                   PaddingRight: =14
                   PaddingTop: =14
                   Tooltip: ="Search"
-                  Visible: =false
-                  Width: =TextSearchBox1.Height
-                  X: =TextSearchBox1.X
-                  Y: =90
+                  Width: =TextSearchBox2.Height
+                  X: =TextSearchBox2.X
+                  Y: =TextSearchBox2.Y
