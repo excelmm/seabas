@@ -3,8 +3,10 @@ Screens:
     Properties:
       LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
       OnVisible: |-
-        =Refresh([@'SEABAS List']);
+        =Set(varSEABASRecentStart, DateAdd(Today(), -89, TimeUnit.Days));
+        Set(varSEABASRecentEnd, DateAdd(Today(), 1, TimeUnit.Days));
         Set(varCardsOffset, 10);
+        Select(IconRefresh1)
     Children:
       - RectQuickActionBar1:
           Control: Rectangle@2.3.0
@@ -34,15 +36,47 @@ Screens:
             AccessibleLabel: =Self.Tooltip
             BorderColor: =RGBA(0, 18, 107, 1)
             Color: =RGBA(255, 255, 255, 1)
-            DisplayMode: =If(Coalesce(varSEABASSearching, false), DisplayMode.Disabled, DisplayMode.Edit)
             Height: =88
             Icon: =Icon.Reload
             OnSelect: |-
-              =If(
-                  IsBlank(varSEABASAppliedQuery),
-                  Refresh([@'SEABAS List']),
-                  UpdateContext({locSEABASRefreshQuery: varSEABASAppliedQuery});
-                  Select(SearchIcon1)
+              =Refresh([@'SEABAS List']);
+
+              If(
+                  !Coalesce(varSEABASShowSearchResults, false),
+                  With(
+                      {
+                          recentRows: ForAll(
+                              SortByColumns(
+                                  Filter(
+                                      [@'SEABAS List'],
+                                      'Trade Date' >= varSEABASRecentStart &&
+                                      'Trade Date' < varSEABASRecentEnd
+                                  ),
+                                  "Created",
+                                  SortOrder.Descending
+                              ) As trade,
+                              {
+                                  ID: trade.ID,
+                                  Created: trade.Created,
+                                  'Trade Date': trade.'Trade Date',
+                                  'Sales Manager Name': {Value: trade.'Sales Manager Name'.Value},
+                                  'Product Name': {Value: trade.'Product Name'.Value},
+                                  'Product Form': {Value: trade.'Product Form'.Value},
+                                  'Volume (MT)': trade.'Volume (MT)',
+                                  Price: trade.Price,
+                                  Incoterm: {Value: trade.Incoterm.Value},
+                                  'Ship-to Destination': {Value: trade.'Ship-to Destination'.Value},
+                                  Customer: {Value: trade.Customer.Value},
+                                  Remarks: trade.Remarks,
+                                  'SAP SE Number': Text(trade.'SAP SE Number')
+                              }
+                          )
+                      },
+                      If(
+                          !Coalesce(varSEABASShowSearchResults, false),
+                          ClearCollect(colSEABASSearchResults, recentRows)
+                      )
+                  )
               )
             PaddingBottom: =22
             PaddingLeft: =22
@@ -85,8 +119,9 @@ Screens:
             Height: =88
             Icon: =Icon.Add
             OnSelect: |-
-              =NewForm(EditForm1);
-              Navigate(EditScreen1, ScreenTransition.Fade)
+              =NewForm(EditForm1);Navigate(EditScreen1, ScreenTransition.Fade, {
+                  varRec: BrowseGallery1.Selected
+              })
             PaddingBottom: =24
             PaddingLeft: =24
             PaddingRight: =24
@@ -103,7 +138,6 @@ Screens:
             BorderColor: =RGBA(0, 18, 107, 1)
             BorderStyle: =BorderStyle.None
             Default: =""
-            DelayOutput: =false
             Font: =Font.'Open Sans'
             Height: =68
             HintText: ="Search items"
@@ -120,86 +154,76 @@ Screens:
       - SearchIcon1:
           Control: Classic/Icon@2.5.0
           Properties:
-            AccessibleLabel: =Self.Tooltip
-            AutoDisableOnSelect: =false
             BorderColor: =RGBA(0, 18, 107, 1)
             Color: =RGBA(191, 190, 190, 1)
-            DisplayMode: =If(Coalesce(varSEABASSearching, false), DisplayMode.Disabled, DisplayMode.Edit)
             Height: =Self.Width
             Icon: =Icon.Search
             OnSelect: |-
-              =With(
-                  {searchText: Coalesce(locSEABASRefreshQuery, TrimEnds(TextSearchBox1.Text))},
-                  UpdateContext({locSEABASRefreshQuery: Blank()});
-                  If(
-                      !Coalesce(varSEABASSearching, false),
-                      If(
-                          IsBlank(searchText),
-                          Set(varSEABASAppliedQuery, Blank());
-                          Set(varSEABASSearchStatus, Blank());
-                          Clear(colSEABASSearchResults);
-                          Refresh([@'SEABAS List']);
-                          true,
-                          With(
-                              {requestID: GUID()},
-                              Set(varSEABASSearchRequest, requestID);
-                              Set(varSEABASSearching, true);
-                              Set(varSEABASSearchStatus, "Searching…");
+              =If(
+                  IsBlank(Trim(TextSearchBox1.Text)),
+                  Set(varSEABASSearchRequest, Blank());
+                  Set(varSEABASSearching, false);
+                  Set(varSEABASShowSearchResults, false);
+                  Set(varSEABASSearchStatus, Blank());
+                  Select(IconRefresh1)
+              );
 
-                              IfError(
-                                  With(
-                                      {result: 'SEABAS-SearchTest'.Run(searchText)},
-                                      If(
-                                          varSEABASSearchRequest = requestID,
-                                          With(
-                                              {
-                                                  rows: ForAll(
-                                                      Table(ParseJSON(result.rowsjson)) As trade,
-                                                      {
-                                                          ID: Value(trade.Value.id),
-                                                          Created: DateTimeValue(trade.Value.created),
-                                                          'Trade Date': If(
-                                                              IsBlank(Text(trade.Value.tradeDate)),
-                                                              Blank(),
-                                                              DateValue(trade.Value.tradeDate)
-                                                          ),
-                                                          'Sales Manager Name': {Value: Text(trade.Value.salesManager)},
-                                                          'Product Name': {Value: Text(trade.Value.product)},
-                                                          'Product Form': {Value: Text(trade.Value.productForm)},
-                                                          'Volume (MT)': Value(trade.Value.volume),
-                                                          Price: Value(trade.Value.price),
-                                                          Incoterm: {Value: Text(trade.Value.incoterm)},
-                                                          'Ship-to Destination': {Value: Text(trade.Value.destination)},
-                                                          Customer: {Value: Text(trade.Value.customer)},
-                                                          Remarks: Text(trade.Value.remarks),
-                                                          'SAP SE Number': Text(trade.Value.sapSe)
-                                                      }
-                                                  )
-                                              },
-                                              If(
-                                                  IsError(rows),
-                                                  Error({Kind: ErrorKind.Validation, Message: "Invalid search results."}),
-                                                  ClearCollect(colSEABASSearchResults, rows);
-                                                  Set(varSEABASAppliedQuery, searchText);
-                                                  Set(
-                                                      varSEABASSearchStatus,
-                                                      Coalesce(result.summary, If(IsEmpty(rows), "No matching trades.", "Search complete."))
-                                                  );
-                                                  Set(varSEABASSearching, false);
-                                                  true
-                                              )
-                                          ),
-                                          false
+              If(
+                  !IsBlank(Trim(TextSearchBox1.Text)) &&
+                  !Coalesce(varSEABASSearching, false),
+                  With(
+                      {
+                          requestID: GUID(),
+                          searchText: Trim(TextSearchBox1.Text)
+                      },
+                      Set(varSEABASSearchRequest, requestID);
+                      Set(varSEABASSearching, true);
+                      Set(varSEABASSearchStatus, "Searching…");
+
+                      IfError(
+                          With(
+                              {result: 'SEABAS-SearchTest'.Run(searchText)},
+                              If(
+                                  varSEABASSearchRequest = requestID,
+                                  ClearCollect(
+                                      colSEABASSearchResults,
+                                      ForAll(
+                                          Table(ParseJSON(result.rowsjson)) As trade,
+                                          {
+                                              ID: Value(trade.Value.id),
+                                              Created: DateTimeValue(trade.Value.created),
+                                              'Trade Date': If(
+                                                  IsBlank(Text(trade.Value.tradeDate)),
+                                                  Blank(),
+                                                  DateValue(trade.Value.tradeDate)
+                                              ),
+                                              'Sales Manager Name': {Value: Text(trade.Value.salesManager)},
+                                              'Product Name': {Value: Text(trade.Value.product)},
+                                              'Product Form': {Value: Text(trade.Value.productForm)},
+                                              'Volume (MT)': Value(trade.Value.volume),
+                                              Price: Value(trade.Value.price),
+                                              Incoterm: {Value: Text(trade.Value.incoterm)},
+                                              'Ship-to Destination': {Value: Text(trade.Value.destination)},
+                                              Customer: {Value: Text(trade.Value.customer)},
+                                              Remarks: Text(trade.Value.remarks),
+                                              'SAP SE Number': Text(trade.Value.sapSe)
+                                          }
                                       )
-                                  ),
-                                  If(
-                                      varSEABASSearchRequest = requestID,
-                                      Set(varSEABASSearchStatus, "Search failed. Please try again.");
-                                      Set(varSEABASSearching, false)
                                   );
-                                  false
-                              )
-                          )
+                                  Set(varSEABASShowSearchResults, true);
+                                  Set(varSEABASSearchStatus, result.summary);
+                                  Set(varSEABASSearching, false)
+                              );
+                              true
+                          ),
+                          If(
+                              varSEABASSearchRequest = requestID,
+                              Clear(colSEABASSearchResults);
+                              Set(varSEABASSearchStatus, "Search failed. Please try again.");
+                              Set(varSEABASSearching, false);
+                              Notify(FirstError.Message, NotificationType.Error, 10000)
+                          );
+                          false
                       )
                   )
               )
@@ -207,7 +231,6 @@ Screens:
             PaddingLeft: =14
             PaddingRight: =14
             PaddingTop: =14
-            TabIndex: =0
             Tooltip: ="Search"
             Width: =TextSearchBox1.Height
             X: =TextSearchBox1.X
@@ -218,13 +241,30 @@ Screens:
           Properties:
             BorderColor: =RGBA(0, 18, 107, 1)
             Height: =Parent.Height - Self.Y
-            Items: =SortByColumns([@'SEABAS List'], "Created", If(SortDescending1, SortOrder.Ascending, SortOrder.Descending))
+            Items: |-
+              =Sort(
+                  colSEABASSearchResults,
+                  Created,
+                  If(SortDescending1, SortOrder.Ascending, SortOrder.Descending)
+              )
             OnSelect: |-
-              =Set(varSEABASSelectedTrade, ThisItem);
-              Navigate(DetailScreen1, ScreenTransition.Fade)
+              =With(
+                  {selectedTradeID: ThisItem.ID},
+                  Set(
+                      varSEABASSelectedTrade,
+                      LookUp([@'SEABAS List'], ID = selectedTradeID)
+                  );
+                  If(
+                      IsBlank(varSEABASSelectedTrade),
+                      Notify(
+                          "This trade could not be opened. Refresh and try again.",
+                          NotificationType.Warning
+                      ),
+                      Navigate(DetailScreen1, ScreenTransition.Fade)
+                  )
+              )
             ShowScrollbar: =false
             TemplateSize: =130
-            Visible: =IsBlank(varSEABASAppliedQuery)
             Width: =Parent.Width
             Y: =LblSEABASSearchStatus.Y + LblSEABASSearchStatus.Height
           Children:
@@ -335,121 +375,6 @@ Screens:
                   OnSelect: =Select(Parent)
                   Visible: =ThisItem.IsSelected && false
                   Width: =4
-      - SearchResultsGallery:
-          Control: Gallery@2.15.0
-          Variant: BrowseLayout_Vertical_ThreeTextVariant_ver5.0
-          Properties:
-            BorderColor: =BrowseGallery1.BorderColor
-            Height: =BrowseGallery1.Height
-            Items: =Sort(colSEABASSearchResults, Created, If(SortDescending1, SortOrder.Ascending, SortOrder.Descending))
-            OnSelect: |-
-              =With(
-                  {selectedTradeID: ThisItem.ID},
-                  Set(
-                      varSEABASSelectedTrade,
-                      IfError(LookUp([@'SEABAS List'], ID = selectedTradeID), Blank())
-                  );
-                  If(
-                      IsBlank(varSEABASSelectedTrade),
-                      Notify("This trade could not be opened. Refresh and try again.", NotificationType.Warning),
-                      Navigate(DetailScreen1, ScreenTransition.Fade)
-                  )
-              )
-            ShowScrollbar: =BrowseGallery1.ShowScrollbar
-            TemplateSize: =BrowseGallery1.TemplateSize
-            Visible: =!IsBlank(varSEABASAppliedQuery)
-            Width: =BrowseGallery1.Width
-            Y: =BrowseGallery1.Y
-          Children:
-            - SearchResultCard:
-                Control: GroupContainer@1.5.0
-                Variant: ManualLayout
-                Properties:
-                  Fill: =RGBA(228, 232, 240, 1)
-                  Height: =Parent.TemplateHeight - varCardsOffset
-                  RadiusBottomLeft: =10
-                  RadiusBottomRight: =10
-                  RadiusTopLeft: =10
-                  RadiusTopRight: =10
-                  Width: =Parent.TemplateWidth - varCardsOffset * 2
-                  X: =varCardsOffset
-                  Y: =varCardsOffset
-            - SearchResultTitle:
-                Control: Label@2.5.1
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 1)
-                  Color: =RGBA(0, 18, 107, 1)
-                  Font: =Font.'Open Sans'
-                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Bold, FontWeight.Semibold)
-                  Height: =Self.Size * 1.8
-                  OnSelect: =Select(Parent)
-                  PaddingBottom: =0
-                  PaddingLeft: =0
-                  PaddingRight: =0
-                  PaddingTop: =0
-                  Size: =16
-                  Text: |-
-                    =ThisItem.'Sales Manager Name'.Value&" (#"&ThisItem.ID&If(!IsBlank(ThisItem.'SAP SE Number')," | SAP SE #"&ThisItem.'SAP SE Number',"")&")"
-                  VerticalAlign: =VerticalAlign.Top
-                  Width: =Parent.TemplateWidth - 86
-                  X: =30
-                  Y: =(Parent.TemplateHeight - (Self.Size*3 + SearchResultSubtitle.Size*1.5 + 2 + SearchResultDate.Size*1.5)) / 2
-            - SearchResultSubtitle:
-                Control: Label@2.5.1
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 1)
-                  Font: =Font.'Open Sans'
-                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
-                  Height: =Self.Size * 3.6
-                  OnSelect: =Select(Parent)
-                  PaddingBottom: =0
-                  PaddingLeft: =0
-                  PaddingRight: =0
-                  PaddingTop: =0
-                  Size: =12
-                  Text: |-
-                    =ThisItem.'Product Name'.Value&", "&ThisItem.'Volume (MT)'&" MT, "&ThisItem.'Product Form'.Value&", $"&ThisItem.Price&"/MT "&ThisItem.Incoterm.Value&" "&ThisItem.'Ship-to Destination'.Value&", "&ThisItem.Customer.Value&
-                    If(!IsBlank(ThisItem.Remarks)," ("&ThisItem.Remarks&")")
-                  VerticalAlign: =VerticalAlign.Top
-                  Width: =SearchResultTitle.Width
-                  X: =SearchResultTitle.X
-                  Y: =SearchResultTitle.Y + SearchResultTitle.Height
-            - SearchResultDate:
-                Control: Label@2.5.1
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 1)
-                  Color: =RGBA(50, 86, 160, 1)
-                  Font: =Font.'Open Sans'
-                  FontWeight: =If(ThisItem.IsSelected, FontWeight.Semibold, FontWeight.Normal)
-                  Height: =Self.Size * 1.8
-                  OnSelect: =Select(Parent)
-                  PaddingBottom: =0
-                  PaddingLeft: =0
-                  PaddingRight: =0
-                  PaddingTop: =0
-                  Size: =12
-                  Text: =Text(ThisItem.'Trade Date',"dd-mmm-yy")
-                  VerticalAlign: =VerticalAlign.Top
-                  Width: =SearchResultTitle.Width
-                  X: =SearchResultTitle.X
-                  Y: =SearchResultSubtitle.Y + SearchResultSubtitle.Height
-            - SearchResultArrow:
-                Control: Classic/Icon@2.5.0
-                Properties:
-                  AccessibleLabel: =Self.Tooltip
-                  BorderColor: =RGBA(0, 18, 107, 1)
-                  Color: =RGBA(166, 166, 166, 1)
-                  Height: =50
-                  Icon: =Icon.ChevronRight
-                  OnSelect: =Select(Parent)
-                  PaddingBottom: =16
-                  PaddingLeft: =16
-                  PaddingRight: =16
-                  PaddingTop: =16
-                  Tooltip: ="View item details"
-                  Width: =50
-                  X: =Parent.TemplateWidth - Self.Width - 12
-                  Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
       - Rectangle11:
           Control: Rectangle@2.3.0
           Properties:
@@ -489,8 +414,8 @@ Screens:
             Font: =Font.'Open Sans'
             Height: =28
             Size: =14
-            Text: =Coalesce(varSEABASSearchStatus, "Enter a search and select the magnifying glass.")
-            Width: =Parent.Width
+            Text: =	Coalesce(varSEABASSearchStatus, "Showing trades from the past 90 days")
+            Width: =	640
             Y: =TextSearchBox1.Y + TextSearchBox1.Height
       - BtnCancelSearch:
           Control: Classic/Button@2.2.0

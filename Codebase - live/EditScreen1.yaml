@@ -5,10 +5,10 @@ Screens:
       OnVisible: |-
         =Set(varFieldWidth, 300);
         Set(varFieldHeight, 30);
-        Set(varMaterialHeight,  30);
+        Set(varMaterialHeight, 30);
         Set(varRightOffset, 30);
-        Set(varBorderColor, RGBA(200,200,200,1));
-        Set(varBorderColorFocused, RGBA(0,120,212,1));
+        Set(varBorderColor, RGBA(200, 200, 200, 1));
+        Set(varBorderColorFocused, RGBA(0, 120, 212, 1));
         Set(varLabelLeftOffset, 20);
         Set(varContainerWidth, 85%);
         Set(varCopyMode, false);
@@ -16,7 +16,7 @@ Screens:
         Set(varCopyCustomer, false);
         Set(varCopyPT, false);
 
-        Set(fontColour, RGBA(0,0,0,1));
+        Set(fontColour, RGBA(0, 0, 0, 1));
         Set(fontSizeLabel, 15);
 
         Set(
@@ -29,11 +29,7 @@ Screens:
         );
         Set(varMarginManual, !IsBlank(varMarginOverride));
 
-        UpdateContext(
-            {
-                varShowMarginDetails: false
-            }
-        )
+        UpdateContext({ varShowMarginDetails: false })
     Children:
       - RectQuickActionBar3:
           Control: Rectangle@2.3.0

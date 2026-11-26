@@ -63,7 +63,12 @@ Screens:
             AccessibleLabel: =Self.Tooltip
             BorderColor: =RGBA(0, 18, 107, 1)
             Color: =RGBA(255, 255, 255, 1)
-            DisplayMode: =If(varSEABASSelectedTrade.'Created By'.Email = User().Email, DisplayMode.Edit, DisplayMode.Disabled)
+            DisplayMode: |-
+              =If(
+                  varSEABASSelectedTrade.'Created By'.Email = User().Email,
+                  DisplayMode.Edit,
+                  DisplayMode.Disabled
+              )
             Height: =88
             Icon: =Icon.Trash
             OnSelect: |-
